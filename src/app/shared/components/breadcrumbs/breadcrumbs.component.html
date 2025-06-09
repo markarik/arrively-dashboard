@@ -1,0 +1,22 @@
+<div class="page-header">
+  <div class="page-block">
+    <div class="row align-items-center">
+      <div class="col-md-12">
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item">
+            <xng-breadcrumb [separator]="iconTemplate">
+              <ng-container *xngBreadcrumbItem="let breadcrumb; let info = info; let first = first">
+                <mat-icon *ngIf="info">{{ info }}</mat-icon>
+                <ng-container *ngIf="!first">{{ breadcrumb }}</ng-container>
+              </ng-container>
+            </xng-breadcrumb>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #iconTemplate>
+  <mat-icon>arrow_right</mat-icon>
+</ng-template>

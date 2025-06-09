@@ -1,0 +1,16 @@
+@if (isSpinnerVisible) {
+<div id="http-loader">
+  <div class="loader-bg">
+    <!-- three-bounce spinner -->
+    @if (spinner() === Spinkit.skThreeBounce) {
+    <div class="sk-three-bounce">
+      <div class="sk-child sk-bounce1" [style.background-color]="backgroundColor()"></div>
+      <div class="sk-child sk-bounce2" [style.background-color]="backgroundColor()"></div>
+      <div class="sk-child sk-bounce3" [style.background-color]="backgroundColor()"></div>
+    </div>
+    }
+  </div>
+</div>
+}
+
+

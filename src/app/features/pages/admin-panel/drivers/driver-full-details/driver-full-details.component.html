@@ -1,0 +1,242 @@
+<div class="row g-4">
+  <div class="col-md-3">
+    <div class="card border-top border-4 border-succxess">
+      <div class="card-body p-3">
+        <div class="text-center">
+          <img
+            src="{{ driverDetails!.profile!.image_url }}"
+            alt="{{ driverDetails!.profile!.first_name }} {{ driverDetails!.profile!.last_name }}"
+            class="img-fluid rounded w-100"
+          />
+        </div>
+        <h1 class="card-title text-center mt-3 fs-4 fw-bold text-dark">
+          {{ driverDetails!.profile!.first_name }} {{ driverDetails!.profile!.last_name }}
+        </h1>
+        <p class="text-muted text-center small">
+          {{ driverDetails!.profile!.city?.name || 'N/A' }}
+        </p>
+        <ul class="list-group list-group-flush bg-light rounded shadow-sm mt-3">
+          <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+            <span>Status</span>
+            <span>
+              <span id="verified-status" class="badge bg-success d-none">Verified</span>
+              <span id="not-verified-status" class="badge bg-danger">Not Verified</span>
+            </span>
+          </li>
+
+          <li class="list-group-item">
+            <a
+              href="{{ driverDetails!.vehicle!.documents!.driver_license }}"
+              target="_blank"
+              class="text-primary text-decoration-underline"
+            >
+              Driver License
+            </a>
+          </li>
+
+          <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+            <span>Joined On</span>
+            <span>{{ driverDetails!.profile!.created_at | dateConvert: 'yyyy-MMM-dd' }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Driver and Vehicle Details -->
+  <div class="col-md-9">
+    <!-- Driver Details Section -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body p-3">
+        <h3 class="card-title fs-5 fw-semibold text-dark mb-4">Driver Details</h3>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <p>
+              <strong>Name:</strong>
+              {{ driverDetails!.profile!.first_name }} {{ driverDetails!.profile!.last_name }}
+            </p>
+            <p>
+              <strong>Email:</strong>
+              {{ driverDetails!.profile!.email }}
+            </p>
+            <p>
+              <strong>Phone:</strong>
+              {{ driverDetails!.profile!.phone_number }}
+            </p>
+            <p>
+              <strong>Languages:</strong>
+              {{ getLanguages(driverDetails!.profile!.language!) }}
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p>
+              <strong>Rating:</strong>
+              {{ driverDetails!.profile!.rate }} / 5
+            </p>
+            <p>
+              <strong>Number of Rides:</strong>
+              {{ driverDetails!.profile!.number_of_rides }}
+            </p>
+            <p>
+              <strong>From:</strong>
+              {{ driverDetails!.profile!.where_from || 'N/A' }}
+            </p>
+            <p>
+              <strong>About:</strong>
+              {{ driverDetails!.profile!.about_me || 'N/A' }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Primeng Components -->
+    <p-confirmpopup />
+
+    <!-- Vehicle Details Section -->
+    @if (driverDetails!.vehicle != null) {
+      <div class="card shadow-sm">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="card-title fs-5 fw-semibold text-dark mb-0">Vehicle Details</h3>
+            @if(!driverDetails!.vehicle!.is_verified){
+            <p-button (onClick)="confirm1($event)" label="Verify" [outlined]="true" />
+            }@else{
+            <p-button (onClick)="rejectUser($event)" label="Ban" [outlined]="true" severity="danger"/>
+            }
+
+          </div>
+          <div id="vehicle-details">
+            <div class="row g-4">
+              <div class="col-md-6">
+                <p>
+                  <strong>Make:</strong>
+                  {{ driverDetails!.vehicle!.vehicle_make }}
+                </p>
+                <p>
+                  <strong>Model:</strong>
+                  {{ driverDetails!.vehicle!.vehicle_model }}
+                </p>
+                <p>
+                  <strong>Year:</strong>
+                  {{ driverDetails!.vehicle!.vehicle_model_year }}
+                </p>
+                <p>
+                  <strong>Plate Number:</strong>
+                  {{ driverDetails!.vehicle!.vehicle_plate_number }}
+                </p>
+                <p>
+                  <strong>Color:</strong>
+                  {{ driverDetails!.vehicle!.vehicle_color }}
+                </p>
+                <p>
+                  <strong>Style:</strong>
+                  {{ driverDetails!.vehicle!.style!.name }}
+                </p>
+              </div>
+              <div class="col-md-6">
+                <p>
+                  <strong>Passenger Capacity:</strong>
+                  {{ driverDetails!.vehicle!.vehicle_number_of_passengers }}
+                </p>
+                <p>
+                  <strong>Wheelchair Accessible:</strong>
+                  {{ driverDetails!.vehicle!.vehicle_has_wheel_chair ? 'Yes' : 'No' }}
+                </p>
+                <p>
+                  <strong>Hire Price per Mile:</strong>
+                  ${{ driverDetails!.vehicle!.hire_price_per_mile }}
+                </p>
+                <p>
+                  <strong>Total Rides:</strong>
+                  {{ driverDetails!.vehicle!.vehicle_total_rides }}
+                </p>
+                <p>
+                  <strong>Verification Status:</strong>
+                  {{ driverDetails!.vehicle!.is_verified ? 'Verified' : 'Not Verified' }}
+                </p>
+                <p>
+                  <strong>Inspection Status:</strong>
+                  {{ driverDetails!.vehicle!.inspection!.is_active ? 'Active' : 'Inactive' }}
+                </p>
+              </div>
+            </div>
+            <div class="mt-4">
+              <h4 class="fs-6 fw-semibold text-dark mb-2">Documents</h4>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <a
+                    href="{{ driverDetails!.vehicle!.documents!.auto_insuarance }}"
+                    target="_blank"
+                    class="text-primary text-decoration-underline"
+                  >
+                    Auto Insurance
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a
+                    href="{{ driverDetails!.vehicle!.documents!.vehicle_registration }}"
+                    target="_blank"
+                    class="text-primary text-decoration-underline"
+                  >
+                    Vehicle Registration
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a
+                    href="{{ driverDetails!.vehicle!.documents!.commercial_license }}"
+                    target="_blank"
+                    class="text-primary text-decoration-underline"
+                  >
+                    Commercial License
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="card shadow-sm">
+        <div class="card-body p-3">
+          <div id="no-vehicle" class="text-muted">No vehicle registered.</div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<div class="card">
+  <p-dialog header="Reason For Rejecting." [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
+
+    <form autocomplete="off" [formGroup]="myForm" class="login-form" (ngSubmit)="onFormSubmit()">
+
+      <div class="mb-3">
+      <textarea                     formControlName="reason"
+ class="form-control" cols="40" id="message" name="message" rows="10"></textarea>
+
+                <div *ngIf="myForm.get('reason')?.touched && registerFormControl['reason'].errors?.['required']" class="text-danger">
+                  Reject Reason is required
+                </div>
+
+             
+      </div>
+    
+   
+      <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+                  <!-- <p-button label="Submit" [outlined]="true" /> -->
+
+                  <div class="form-group mt-2" *ngIf="myForm.valid">
+                  <button type="submit" class="btn btn-primary btn-block w-100">
+                    Submit
+                    <i *ngIf="isFormSubmitted && myForm.valid" class="ml-2 pi pi-spin pi-spinner"></i>
+                  </button>
+                </div>
+
+                <div class="form-group mt-2" *ngIf="myForm.invalid">
+                  <button type="submit" class="btn btn-primary btn-block w-100">Submit</button>
+                </div>
+
+    </form>
+ 
+  </p-dialog>
+</div>
