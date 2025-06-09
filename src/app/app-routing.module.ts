@@ -45,11 +45,9 @@ const routes: Routes = [
           }
         },
 
-
         children: [
           {
             path: 'drivers',
-           
 
             loadChildren: () => import('./features/pages/admin-panel/drivers/drivers-routing.module'),
 
@@ -77,11 +75,25 @@ const routes: Routes = [
                 }
               }
             ]
+          },
+
+          {
+            path: 'list-admins',
+
+            loadChildren: () => import('./features/pages/admin-panel/admins/admins-routing.module'),
+
+            data: { breadcrumb: 'Admins' }
+          },
+
+          {
+            path: 'create-admin',
+
+            loadChildren: () => import('./features/pages/admin-panel/admins/create/create_admin-routing.module'),
+
+            data: { breadcrumb: 'Create Admin' }
           }
         ]
-      },
-
-    
+      }
     ]
   },
   {

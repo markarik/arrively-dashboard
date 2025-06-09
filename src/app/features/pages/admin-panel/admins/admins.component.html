@@ -1,0 +1,48 @@
+
+
+<div class="container-fluid">
+    
+
+
+    <div class="border">
+        <ng-container [ngTemplateOutlet]="teamssList" *ngIf="!isCreateTeam"></ng-container>
+    </div>
+</div>
+
+<ng-template #teamssList>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered text-sm">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col" class="p-3">Name</th>
+                    <th scope="col" class="p-3">Rate</th>
+                    <th scope="col" class="p-3">Where From</th>
+                    <th scope="col" class="p-3">Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="adminsList.length == 0">
+                    <td class="p-3" colspan="5">No Drivers Available</td>
+                </tr>
+                @for (item of adminsList; track $index) {
+                <tr>
+                    <td class="p-3">
+                        <a [routerLink]="['/admin', 'driver', item.id, 'details']"
+                            routerLinkActive="active" class="text-primary text-decoration-none">
+                            {{ item.first_name }} {{ item.last_name }}
+                        </a>
+                    </td>
+                    <td class="p-3">
+                        <span class="badge bg-success-subtle text-success rounded-pill">
+                            {{ item.rate }}
+                        </span>
+                    </td>
+                    <td class="p-3">{{ item.where_from }}</td>
+                    <td class="p-3">{{ item.created_at | dateConvert : "yyyy-MMM-dd"}}</td>
+                   
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</ng-template>

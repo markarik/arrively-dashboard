@@ -1,0 +1,112 @@
+<div class="container">
+  <main>
+    <div class="row g-5">
+      <div class="col">
+        <form autocomplete="off" [formGroup]="myForm" class="needs-validation" (ngSubmit)="onFormSubmit()">
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label for="firstName" class="form-label">First name</label>
+              <input type="text" class="form-control" id="firstName" placeholder="" value="" required formControlName="first_name" />
+
+              <span *ngIf="isFormSubmitted">
+                <div *ngIf="registerFormControl['first_name'].errors?.['required']" class="text-danger">First Name is required</div>
+              </span>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="lastName" class="form-label">Last name</label>
+              <input type="text" class="form-control" id="lastName" placeholder="" value="" required formControlName="last_name" />
+
+              <span *ngIf="isFormSubmitted">
+                <div *ngIf="registerFormControl['last_name'].errors?.['required']" class="text-danger">First Name is required</div>
+              </span>
+            </div>
+
+            <div class="col-12">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" formControlName="email" id="email" placeholder="you@example.com" />
+
+              <span *ngIf="isFormSubmitted">
+                <div
+                  *ngIf="myForm.get('reason')?.touched && registerFormControl['email'].errors?.['required']"
+                  class="text-danger invalid-feedback"
+                >
+                  Email address is required
+                </div>
+
+                <div *ngIf="registerFormControl['email'].errors?.['required']" class="text-danger">Email address is required</div>
+                <div
+                  *ngIf="registerFormControl['email'].touched && registerFormControl['email'].errors?.['email']"
+                  class="text-danger invalid-feedback"
+                >
+                  Invalid email address
+                </div>
+              </span>
+            </div>
+
+            <div class="col-12">
+              <angular-phone-number-input
+                formControlName="phoneNumber"
+                [defaultCountry]="'US'"
+                [error]="registerFormControl['phoneNumber'].touched && registerFormControl['phoneNumber'].invalid"
+              />
+            </div>
+
+            <div class="fc-image-row d-flex align-items-center gap-4 mb-3">
+              <!-- Upload Field (always visible) -->
+              <div class="fc-image-container">
+                <span class="fc-image-lable" (click)="imageUpload.click()">
+                  @if (uploadProgress != 0) {
+                    <mat-progress-bar mode="determinate" value="{{ uploadProgress }}"></mat-progress-bar>
+                  }
+                  <div class="fc-image-div">
+                    <svg
+                      class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 16"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                      />
+                    </svg>
+                    <p class="fc-image-first-paragrapgh" *ngIf="!selectedFile">
+                      <span class="text-span">Click here to upload</span>
+                      or drag and drop
+                    </p>
+                    <p class="fc-image-second-paragrapgh" *ngIf="!selectedFile">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                    <p class="fc-image-third-paragrapgh" *ngIf="selectedFile">{{ selectedFile.name }}</p>
+                  </div>
+                  <input id="dropzone-file" type="file" class="hidden" #imageUpload (change)="uploadImagetoStorage($event)" />
+                </span>
+              </div>
+
+              <!-- Image Preview (only if imageUrl is available) -->
+              <div *ngIf="imageUrl" class="fc-image-preview">
+                <img
+                  [src]="imageUrl"
+                  alt="Preview"
+                  style="max-width: 500px; max-height: 500px; object-fit: contain; border-radius: 8px; border: 1px solid #eee"
+                />
+              </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="form-group mt-2">
+              <button type="submit" class="btn btn-primary btn-block w-100">
+                Submit
+                <i *ngIf="isFormValidToSubmitted && myForm.valid" class="ml-2 pi pi-spin pi-spinner"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
