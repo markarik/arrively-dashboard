@@ -28,10 +28,6 @@ export class TokenService {
   get getUserRole(): any {
     var userData = this.sessionStore.getValue().userResource;
 
-    console.log('userData ', userData);
-
-    console.log('userData Data ', userData.data);
-    console.log('userData Data ', userData.data.role);
 
     var role = userData.data.role;
 

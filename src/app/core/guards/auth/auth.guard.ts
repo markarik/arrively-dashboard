@@ -43,7 +43,7 @@ export class AuthGuard  {
       this.isBrowser = isPlatformBrowser(this.platformId);
       this.myTokens = this.sessionStore.getValue().tokenResource;
 
-
+console.log("myTokens myTokens ",this.myTokens);
 
 
       if (

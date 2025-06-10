@@ -1,3 +1,5 @@
+import { City } from "./driver-full-details/driver_details";
+
 export interface DriverAcountsModel {
     id?:              number;
     first_name?:      string;
@@ -15,9 +17,3 @@ export interface DriverAcountsModel {
     language?:        string[] | null;
 }
 
-export interface City {
-    id?:         number;
-    name?:       string;
-    created_at?: Date;
-    updated_at?: Date;
-}
