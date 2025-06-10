@@ -2,9 +2,9 @@ import { ResolveFn } from '@angular/router';
 import {  AdminsService } from './admins.service';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { DriverAcountsModel } from './admins_data';
+import { AdminsModel } from './admins_data';
 
-export const getAdminsResolver: ResolveFn<DriverAcountsModel[]> = (route, state) => {
+export const getAdminsResolver: ResolveFn<AdminsModel[]> = (route, state) => {
   const _adminService = inject(AdminsService);
 
 

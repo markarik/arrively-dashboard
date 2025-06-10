@@ -1,23 +1,24 @@
-import { CommonModule, NgIf } from '@angular/common';
-import { Component, OnDestroy, ViewChild, inject } from '@angular/core';
+import { CommonModule, NgIf, NgOptimizedImage } from '@angular/common';
+import { Component, OnDestroy } from '@angular/core';
 import {
     FormsModule,
     ReactiveFormsModule,
-    UntypedFormBuilder,
   
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-// import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
-import { DriverAcountsModel } from './admins_data';
-import { SessionStore } from 'src/app/core/helpers/session-store/session-store';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ListPipesModule } from 'src/app/core/pipes/list-pipes.module';
+import { ButtonModule } from 'primeng/button';
+import { DrawerModule } from 'primeng/drawer';
+
+import { AvatarModule } from 'primeng/avatar';
+import { AdminsModel } from './admins_data';
 
 @Component({
     selector: 'app-team',
@@ -31,28 +32,30 @@ import { ListPipesModule } from 'src/app/core/pipes/list-pipes.module';
         MatInputModule,
         MatButtonModule,
         RouterLink,
+        DrawerModule, ButtonModule,AvatarModule,
         SharedModule,
         ListPipesModule,
+        NgOptimizedImage,
     ],
     templateUrl: './admins.component.html',
     styleUrl: './admins.component.scss',
 })
 export class AdminsComponent implements OnDestroy {
     isUploading: boolean = false;
+    isDrawerVisible: boolean = false;
 
-    private sessionStore = inject(SessionStore);
 
-    isCreateTeam: boolean = false;
+
 
     adminsSubscription!: Subscription;
     error: string | null = null;
-    adminsList: any[] = [];
-    accountDetails: any;
+    adminsList: AdminsModel[] = [];
+    selectedAdmin: AdminsModel = {};
+
 
    
     constructor(
         private _router: ActivatedRoute,
-        private _formBuilder: UntypedFormBuilder
     ) {}
 
 
@@ -81,5 +84,11 @@ export class AdminsComponent implements OnDestroy {
                 }
             }
         );
+    }
+
+    selectedDetails(selectedItem:AdminsModel){
+        this.isDrawerVisible = true;
+
+        this.selectedAdmin = selectedItem;
     }
 }

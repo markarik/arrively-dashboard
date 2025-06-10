@@ -5,39 +5,59 @@
 
 
     <div class="border">
-        <ng-container [ngTemplateOutlet]="teamssList" *ngIf="!isCreateTeam"></ng-container>
+        <ng-container [ngTemplateOutlet]="adminsListing"></ng-container>
     </div>
 </div>
 
-<ng-template #teamssList>
+<ng-template #adminsListing>
     <div class="table-responsive">
         <table class="table table-hover table-bordered text-sm">
             <thead class="table-light">
                 <tr>
+                    <th scope="col" class="p-3">Image</th>
                     <th scope="col" class="p-3">Name</th>
-                    <th scope="col" class="p-3">Rate</th>
-                    <th scope="col" class="p-3">Where From</th>
+
+                    <th scope="col" class="p-3">Role</th>
+                    <th scope="col" class="p-3">Phone Number</th>
+                                        <th scope="col" class="p-3">Email</th>
+
                     <th scope="col" class="p-3">Created At</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngIf="adminsList.length == 0">
-                    <td class="p-3" colspan="5">No Drivers Available</td>
+                    <td class="p-3" colspan="5">No Admins Available</td>
                 </tr>
                 @for (item of adminsList; track $index) {
                 <tr>
                     <td class="p-3">
-                        <a [routerLink]="['/admin', 'driver', item.id, 'details']"
+                        <img ngSrc='{{item.image_url}}' width="50" height="50" >
+                        <!-- <a [routerLink]="['/admin', 'driver', item.id, 'details']"
                             routerLinkActive="active" class="text-primary text-decoration-none">
                             {{ item.first_name }} {{ item.last_name }}
+                        </a> -->
+                    </td>
+
+                     <td class="p-3" (click)="selectedDetails(item)">
+                        <!-- <a [routerLink]="['/admin', 'driver', item.id, 'details']"
+                            routerLinkActive="active" class="text-primary text-decoration-none">
+                            {{ item.first_name }} {{ item.last_name }}
+                        </a> -->
+
+                                                   <a
+                           class="text-primary text-decoration-none">
+                            {{ item.first_name }} {{ item.last_name }}
                         </a>
+
                     </td>
                     <td class="p-3">
                         <span class="badge bg-success-subtle text-success rounded-pill">
-                            {{ item.rate }}
+                            {{ item.role }}
                         </span>
                     </td>
-                    <td class="p-3">{{ item.where_from }}</td>
+                    <td class="p-3">{{ item.phone_number }}</td>
+                                        <td class="p-3">{{ item.email }}</td>
+
                     <td class="p-3">{{ item.created_at | dateConvert : "yyyy-MMM-dd"}}</td>
                    
                 </tr>
@@ -46,3 +66,26 @@
         </table>
     </div>
 </ng-template>
+
+
+<!-- View Of Admin Details -->
+<div class="card flex justify-center">
+    <p-drawer [(visible)]="isDrawerVisible" [closable]="false" position="right">
+        <ng-template #header>
+            <div class="flex items-center gap-2">
+                <p-avatar image="{{ selectedAdmin.image_url }}" shape="circle" />
+                <span class="font-bold">{{ selectedAdmin.first_name }} {{ selectedAdmin.last_name }}</span>
+            </div>
+        </ng-template>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat.
+        </p>
+        <ng-template #footer>
+            <div class="flex items-center gap-2">
+                <button pButton label="Account" icon="pi pi-user" class="w-full" outlined></button>
+                <button pButton label="Logout" icon="pi pi-sign-out" class="w-full" severity="danger" text></button>
+            </div>
+        </ng-template>
+    </p-drawer>
+</div>

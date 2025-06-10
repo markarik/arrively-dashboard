@@ -134,7 +134,7 @@ const phone_number= this.myForm?.value.phoneNumber;
           first_name: fname,
           last_name: lname,
           email: email,
-          city_id: 1,
+          city_id: 0,
           image_url: imageUrl,
           password:'',
           phone_number:phone_number,
