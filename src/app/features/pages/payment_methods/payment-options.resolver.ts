@@ -1,18 +1,18 @@
 import { ResolveFn } from '@angular/router';
-import {  TeamService } from './drivers.service';
+import {  PaymentOptionsService } from './payment-options.service';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { DriverAcountsModel } from './drivers_data';
+import { AdminPaymentOptionsModel } from './payment-options-data';
 
-export const teamResolver: ResolveFn<DriverAcountsModel[]> = (route, state) => {
-  const _teamService = inject(TeamService);
-
-
+export const paymentOptionsResolver: ResolveFn<AdminPaymentOptionsModel[]> = (route, state) => {
+  const _paymentOptionsService = inject(PaymentOptionsService);
 
 
 
-  return _teamService
-    .getDrivers()
+
+
+  return _paymentOptionsService
+    .getPaymentOptions()
 
     .pipe(
       catchError((error) => {

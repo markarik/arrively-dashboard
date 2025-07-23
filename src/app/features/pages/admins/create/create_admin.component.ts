@@ -1,4 +1,4 @@
-import { PhoneNumber } from './../../../../../../../node_modules/libphonenumber-js/custom.d';
+import { PhoneNumber } from 'libphonenumber-js/custom';
 import { CommonModule, NgIf } from '@angular/common';
 import { Component, OnDestroy, ViewChild, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
@@ -30,7 +30,7 @@ import { Notify } from 'notiflix';
     SharedModule,
     ListPipesModule,
     MatProgressBarModule,
-    AngularPhoneNumberInput,
+    AngularPhoneNumberInput
   ],
   templateUrl: './create_admin.component.html',
   styleUrl: './create_admin.component.scss'
@@ -67,11 +67,8 @@ export class CreateAdminComponent implements OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       first_name: ['', [Validators.required]],
       last_name: ['', [Validators.required]],
-          phoneNumber: ['', Validators.required],
-
+      phoneNumber: ['', Validators.required]
     });
-
- 
   }
 
   ngOnDestroy() {
@@ -126,9 +123,7 @@ export class CreateAdminComponent implements OnDestroy {
         const fname = this.myForm?.value.first_name;
         const lname = this.myForm?.value.last_name;
         const imageUrl = this.imageUrl;
-const phone_number= this.myForm?.value.phoneNumber;
-
-   
+        const phone_number = this.myForm?.value.phoneNumber;
 
         var data = {
           first_name: fname,
@@ -136,8 +131,8 @@ const phone_number= this.myForm?.value.phoneNumber;
           email: email,
           city_id: 0,
           image_url: imageUrl,
-          password:'',
-          phone_number:phone_number,
+          password: '',
+          phone_number: phone_number
         };
 
         this.adminsService
@@ -145,7 +140,7 @@ const phone_number= this.myForm?.value.phoneNumber;
           .then((res: any) => {
             console.log(res);
 
-            this.imageUrl = "";
+            this.imageUrl = '';
             this.myForm.reset();
           })
           .catch((error) => {

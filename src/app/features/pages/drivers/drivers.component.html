@@ -5,11 +5,11 @@
 
 
     <div class="border">
-        <ng-container [ngTemplateOutlet]="teamssList" *ngIf="!isCreateTeam"></ng-container>
+        <ng-container [ngTemplateOutlet]="driversListOutlet"></ng-container>
     </div>
 </div>
 
-<ng-template #teamssList>
+<ng-template #driversListOutlet>
     <div class="table-responsive">
         <table class="table table-hover table-bordered text-sm">
             <thead class="table-light">

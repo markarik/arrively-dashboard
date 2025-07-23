@@ -1,0 +1,191 @@
+<div class="container-fluid">
+  <div class="border">
+    <ng-container [ngTemplateOutlet]="vehicleTypesListOutlet"></ng-container>
+    <ng-container [ngTemplateOutlet]="addPaymentModeModal"></ng-container>
+  </div>
+</div>
+
+<ng-template #vehicleTypesListOutlet>
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-success" (click)="addPaymentMode()">
+      <i class="fas fa-plus me-2"></i>
+      Add Payment Mode
+    </button>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered text-sm">
+      <thead class="table-light">
+        <tr>
+          <th scope="col" class="p-3">Image</th>
+          <th scope="col" class="p-3">Status</th>
+          <th scope="col" class="p-3">Payment Mode</th>
+          <th scope="col" class="p-3">Require Redirect</th>
+          <th scope="col" class="p-3">Redirect Url</th>
+          <th scope="col" class="p-3">Supported Platforms</th>
+          <th scope="col" class="p-3">Created At</th>
+          <th scope="col" class="p-3">Updated At</th>
+          <th scope="col" class="p-3">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="paymentOptions.length == 0">
+          <td class="p-3" colspan="9">No Payment Modes Available</td>
+        </tr>
+        @for (item of paymentOptions; track $index) {
+          <tr>
+            <td class="p-3">
+              <img
+                *ngIf="item.icon_url; else placeholder"
+                ngSrc="{{ item.icon_url }}"
+                width="50"
+                height="50"
+                alt="Vehicle Type"
+                style="object-fit: cover; border-radius: 6px"
+              />
+              <ng-template #placeholder>
+                <img
+                  ngSrc="assets/images/placeholder.png"
+                  width="50"
+                  height="50"
+                  alt="No Image"
+                  style="object-fit: cover; border-radius: 6px; opacity: 0.6"
+                />
+              </ng-template>
+            </td>
+            <td class="p-3">
+              {{ item.is_active ? 'Active' : 'Inactive' }}
+            </td>
+            <td class="p-3">
+              {{ item.pay_method }}
+            </td>
+            <td class="p-3">
+              {{ item.require_redirect ? 'Yes' : 'No' }}
+            </td>
+            <td class="p-3">
+              {{ item.redirect_url || 'N/A' }}
+            </td>
+            <td class="p-3">
+              {{ item.supported_platforms!.length > 0 ? item.supported_platforms!.join(', ') : 'None' }}
+            </td>
+            <td class="p-3">{{ item.created_at | date: 'yyyy-MMM-dd' }}</td>
+            <td class="p-3">{{ item.updated_at | date: 'yyyy-MMM-dd' }}</td>
+            <td class="p-3">
+              <button class="btn btn-primary" (click)="editVehicleType(item.id!)">Edit</button>
+              <button class="btn btn-danger" (click)="deleteVehicleType(item.id!)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #addPaymentModeModal>
+  <p-drawer header="Add Payment Mode" [(visible)]="visible2" position="right" [dismissible]="false">
+    <div class="modal-body">
+<small class="text-warning mb-4">
+  Before adding a new payment mode, consult with the front-end development team to verify:
+  <ul>
+    <li>Redirect URL format (e.g., must start with '/')</li>
+    <li>Supported platforms (e.g., Android, iOS)</li>
+    <li>Image requirements (e.g., 50x50px, PNG/JPG, max 1MB)</li>
+  </ul>
+  This ensures seamless integration with the front-end application.
+</small>     
+
+<form autocomplete="off" [formGroup]="myForm" (ngSubmit)="onFormSubmit()">
+        <!-- Payment Mode -->
+        <div class="col-12 mb-3">
+          <label for="paymode" class="form-label">Payment Mode Name <span class="text-danger">*</span></label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="paymode" 
+            placeholder="Cash" 
+            formControlName="paymode"
+            [ngClass]="{'is-invalid': isInvalid('paymode')}" />
+          <div *ngIf="isInvalid('paymode') && myForm.get('paymode')?.hasError('required')" class="text-danger">
+            Payment Mode Name is required.
+          </div>
+        </div>
+
+        <!-- Require Redirect -->
+        <div class="col-12 mb-3">
+          <div class="space-x-2">
+            <p-checkbox formControlName="require_redirect" [binary]="true" size="small"></p-checkbox>
+            <span class="ms-2">Require a redirect</span>
+          </div>
+        </div>
+
+        <!-- Redirect URL -->
+        <div class="col-12 mb-3" *ngIf="myForm.get('require_redirect')?.value">
+          <label for="redirect_url" class="form-label">Redirect URL <span class="text-danger">*</span></label>
+          <input 
+            type="text" 
+            class="form-control" 
+            id="redirect_url" 
+            placeholder="/cash" 
+            formControlName="redirect_url"
+            [ngClass]="{'is-invalid': isInvalid('redirect_url')}" />
+          <div *ngIf="isInvalid('redirect_url')">
+            <div *ngIf="myForm.get('redirect_url')?.hasError('required')" class="text-danger">
+              Redirect URL is required when Require Redirect is checked.
+            </div>
+            <div *ngIf="myForm.get('redirect_url')?.hasError('slashPrefix')" class="text-danger">
+              Redirect URL must start with a forward slash (/).
+            </div>
+          </div>
+        </div>
+
+        <!-- Supported Platforms -->
+        <div class="col-12 mb-3">
+          <label for="supported_platforms" class="form-label">Supported Platforms <span class="text-danger">*</span></label>
+          <p-listbox
+            [options]="usedPlartforms"
+            formControlName="supported_platforms"
+            [multiple]="true"
+            optionLabel="name"
+            class="w-100"
+            [listStyle]="{'max-height': '200px'}"
+          />
+          <div *ngIf="isInvalid('supported_platforms') && myForm.get('supported_platforms')?.hasError('required')" class="text-danger">
+            At least one platform is required.
+          </div>
+        </div>
+
+        <!-- File Upload -->
+        <div class="fc-image-row d-flex align-items-center gap-4 mb-3">
+          <div class="justify-between">
+            <label for="fileUpload" class="form-label">Image Upload <span class="text-danger">*</span></label>
+            <p-fileUpload
+              #fu
+              mode="basic"
+              chooseLabel="Choose"
+              chooseIcon="pi pi-upload"
+              name="demo[]"
+              accept="image/*"
+              maxFileSize="1000000"
+              (onSelect)="onUpload($event)"
+              [auto]="true"
+              [customUpload]="true"
+            />
+            <small class="d-block mt-1">{{ selectedFileName }}</small>
+            <div *ngIf="isInvalid('uploadedFile') && myForm.get('uploadedFile')?.hasError('required')" class="text-danger">
+              Image is required.
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-4" />
+
+        <div class="form-group mt-2">
+          <button type="submit" class="btn btn-primary w-100" [disabled]="isFormValidToSubmitted && myForm.valid">
+            Submit {{ myForm.valid }}
+            <i *ngIf="isFormValidToSubmitted && myForm.valid" class="ml-2 pi pi-spin pi-spinner"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+    <!-- <pre>{{ myForm.value | json }}</pre> Pragmatic choice for debugging -->
+  </p-drawer>
+</ng-template>

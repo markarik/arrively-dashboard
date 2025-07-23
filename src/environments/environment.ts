@@ -7,9 +7,13 @@ import packageInfo from '../../package.json';
 export const environment = {
   appVersion: packageInfo.version,
   production: false,
-  baseApiUrl: 'https://c7c6-41-90-172-49.ngrok-free.app/api/v1',
+  baseApiUrl: 'https://71199ed19c9e.ngrok-free.app/api/v1',
+      //     baseApiUrl: 'https://api.arrively.s7works.io/api/v1',
 
-  apiUrl: 'https://c7c6-41-90-172-49.ngrok-free.app/api/v1/admin'
+
+  apiUrl: 'https://71199ed19c9e.ngrok-free.app/api/v1/admin'
+      //     apiUrl: 'https://api.arrively.s7works.io/api/v1/admin',
+
 };
 
 /*

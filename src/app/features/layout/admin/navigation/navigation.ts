@@ -36,7 +36,7 @@ export const NavigationItems: NavigationItem[] = [
         title: 'Dashboard',
         type: 'item',
         url: '/analytics',
-        icon: 'feather icon-home',
+        icon: 'fas fa-house',
         roles: [UserRole.AdminEnum, UserRole.SuperAdminEnum]
       }
     ]
@@ -53,7 +53,7 @@ export const NavigationItems: NavigationItem[] = [
         title: 'Drivers',
         type: 'item',
         url: '/admin/drivers',
-        icon: 'feather icon-user',
+        icon: 'fas fa-user-tie',
         classes: 'nav-item',
         roles: [UserRole.AdminEnum, UserRole.SuperAdminEnum]
       }
@@ -66,27 +66,57 @@ export const NavigationItems: NavigationItem[] = [
     type: 'group',
     icon: 'icon-group',
     children: [
-    
-          {
-            id: 'listadmins',
-            title: 'Admins',
-            type: 'item',
-            url: '/admin/list-admins',
-            icon: 'feather icon-users',
-            classes: 'nav-item',
-            roles: [UserRole.SuperAdminEnum]
-          },
+      {
+        id: 'listadmins',
+        title: 'Admins',
+        type: 'item',
+        url: '/admin/list-admins',
+        icon: 'fas fa-user',
+        classes: 'nav-item',
+        roles: [UserRole.SuperAdminEnum]
+      },
 
-          {
-            id: 'acreatedmins',
-            title: 'Create Admin',
-            type: 'item',
-            url: '/admin/create-admin',
-            icon: 'feather icon-user-plus',
-            classes: 'nav-item',
-            roles: [UserRole.SuperAdminEnum]
-          }
-     
+      {
+        id: 'acreatedmins',
+        title: 'Create Admin',
+        type: 'item',
+        url: '/admin/create-admin',
+        icon: 'fas fa-user-plus',
+        classes: 'nav-item',
+        roles: [UserRole.SuperAdminEnum]
+      }
+    ]
+  },
+
+  {
+    id: 'ui-component',
+    title: 'Basic Information',
+    type: 'group',
+    icon: 'icon-group',
+    children: [
+      {
+        id: 'button',
+        title: 'Vehicle Types',
+        icon: 'fas fa-car',
+
+        type: 'item',
+        url: '/admin/vehicle-types'
+      },
+
+         {
+        id: 'button',
+        title: 'Payment Modes',
+        icon: 'fas fa-cash-register',
+        
+
+        type: 'item',
+        url: '/admin/payment-modes'
+      },
+
+
+
+      
+      
     ]
   }
 ];

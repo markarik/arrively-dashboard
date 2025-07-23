@@ -1,0 +1,59 @@
+<div class="container-fluid">
+  <div class="border">
+    <ng-container [ngTemplateOutlet]="vehicleTypesListOutlet"></ng-container>
+  </div>
+</div>
+
+<ng-template #vehicleTypesListOutlet>
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered text-sm">
+      <thead class="table-light">
+        <tr>
+          <th scope="col" class="p-3">Image</th>
+          <th scope="col" class="p-3">Name</th>
+
+          <th scope="col" class="p-3">Created At</th>
+          <th scope="col" class="p-3">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="vehicleTypes.length == 0">
+          <td class="p-3" colspan="5">No Vehicle Types Available</td>
+        </tr>
+        @for (item of vehicleTypes; track $index) {
+          <tr>
+            <td class="p-3">
+              <!-- <img ngSrc='{{item.image_url}}' width="50" height="50" > -->
+              <img
+                *ngIf="item.image_url; else placeholder"
+                ngSrc="{{ item.image_url }}"
+                width="50"
+                height="50"
+                alt="Vehicle Type"
+                style="object-fit: cover; border-radius: 6px"
+              />
+              <ng-template #placeholder>
+                <img
+                  ngSrc="assets/images/placeholder.png"
+                  width="50"
+                  height="50"
+                  alt="No Image"
+                  style="object-fit: cover; border-radius: 6px; opacity: 0.6"
+                />
+              </ng-template>
+            </td>
+            <td class="p-3">
+              {{ item.name }}
+            </td>
+
+            <td class="p-3">{{ item.created_at | dateConvert: 'yyyy-MMM-dd' }}</td>
+            <td class="p-3">
+              <button class="btn btn-primary" (click)="editVehicleType(item.id!)">Edit</button>
+              <button class="btn btn-danger" (click)="deleteVehicleType(item.id!)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</ng-template>

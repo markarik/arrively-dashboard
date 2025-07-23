@@ -49,7 +49,7 @@ const routes: Routes = [
           {
             path: 'drivers',
 
-            loadChildren: () => import('./features/pages/admin-panel/drivers/drivers-routing.module'),
+            loadChildren: () => import('./features/pages/drivers/drivers-routing.module'),
 
             data: { breadcrumb: 'Drivers' }
           },
@@ -69,7 +69,7 @@ const routes: Routes = [
             children: [
               {
                 path: ':driverId',
-                loadChildren: () => import('./features/pages/admin-panel/drivers/driver-full-details/driver-full-details-routing.module'),
+                loadChildren: () => import('./features/pages/drivers/driver-full-details/driver-full-details-routing.module'),
                 data: {
                   breadcrumb: { alias: 'mentorName', disable: true }
                 }
@@ -80,7 +80,7 @@ const routes: Routes = [
           {
             path: 'list-admins',
 
-            loadChildren: () => import('./features/pages/admin-panel/admins/admins-routing.module'),
+            loadChildren: () => import('./features/pages/admins/admins-routing.module'),
 
             data: { breadcrumb: 'Admins' }
           },
@@ -88,10 +88,30 @@ const routes: Routes = [
           {
             path: 'create-admin',
 
-            loadChildren: () => import('./features/pages/admin-panel/admins/create/create_admin-routing.module'),
+            loadChildren: () => import('./features/pages/admins/create/create_admin-routing.module'),
 
             data: { breadcrumb: 'Create Admin' }
-          }
+          },
+
+          
+
+
+
+             {
+            path: 'vehicle-types',
+
+            loadChildren: () => import('./features/pages/vehicle_types/vehicle-types-routing.module'),
+
+            data: { breadcrumb: 'Vehicle Types' }
+          },
+
+            {
+            path: 'payment-modes',
+
+            loadChildren: () => import('./features/pages/payment_methods/payment-options-routing.module'),
+
+            data: { breadcrumb: 'Payment Options' }
+          },
         ]
       }
     ]
