@@ -22,3 +22,76 @@
 .w-100 {
   width: 100% !important;
 }
+
+
+
+.created-by-card {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  min-width: 250px;
+}
+
+.created-by-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.avatar-container {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #bbb;
+}
+
+.created-by-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.created-by-role {
+  font-size: 0.95rem;
+  color: #888;
+  margin-top: 0.2rem;
+}
+
+.created-by-info {
+  margin-top: 0.5rem;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 0.6rem;
+}
+
+.info-icon {
+  color: #007bff;
+  font-size: 1.1rem;
+}

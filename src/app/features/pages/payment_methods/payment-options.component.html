@@ -1,11 +1,29 @@
 <div class="container-fluid">
   <div class="border">
-    <ng-container [ngTemplateOutlet]="vehicleTypesListOutlet"></ng-container>
+    <ng-container [ngTemplateOutlet]="paymentOptionsListOutlet"></ng-container>
     <ng-container [ngTemplateOutlet]="addPaymentModeModal"></ng-container>
+
+
+    
+    @if(showEditPaymentModeDrawer) {
+
+    <ng-container [ngTemplateOutlet]="editPaymentModeModal"></ng-container>
+
+    }
+    
+
+    @if(adminDetails != null) {
+    <ng-container [ngTemplateOutlet]="showWhoCreated"></ng-container>
+    }
+
+    <p-confirmpopup />
+
+
+    
   </div>
 </div>
 
-<ng-template #vehicleTypesListOutlet>
+<ng-template #paymentOptionsListOutlet>
   <div class="d-flex justify-content-between mb-3">
     <button class="btn btn-outline-secondary" (click)="refreshPaymentOptions()" [disabled]="isLoading">
       <i class="fas fa-sync-alt me-2" [class.fa-spin]="isLoading"></i>
@@ -78,7 +96,10 @@
 
           </td>
           <td class="p-3">
-            {{ item.pay_method }}
+
+            <a href="javascript:void(0)" (click)="showWhoCreatedMode(item!)">
+              {{ item.pay_method }}
+            </a>
           </td>
           <td class="p-3">
             <span class="badge {{ item.require_redirect? 'bg-success':'bg-danger' }}"> {{ item.require_redirect ? 'Yes'
@@ -96,11 +117,12 @@
           <td class="p-3">{{ item.created_at | date: 'yyyy-MMM-dd' }}</td>
           <td class="p-3">{{ item.updated_at | date: 'yyyy-MMM-dd' }}</td>
           <td class="p-3">
-            <a class="pe-2 text-primary" href="javascript:void(0)" (click)="editVehicleType(item.id!)"><i
+            <a class="pe-2 text-primary" href="javascript:void(0)" (click)="editPaymentMode(item!, $event)"><i
                 class="fas fa-pencil-alt"></i>
             </a>
-            <a class="ps-2 text-danger" href="javascript:void(0)" (click)="deleteVehicleType(item.id!)"><i
-                class="fa fa-trash-alt"></i></a>
+            <a class="ps-2 text-danger" href="javascript:void(0)" (click)="changeItemStateConfirm(item!, $event)">
+              <i class="fa  {{ item.is_active? 'fa-trash-alt': 'fa-check' }}"></i>
+            </a>
           </td>
         </tr>
         }
@@ -110,7 +132,7 @@
 </ng-template>
 
 <ng-template #addPaymentModeModal>
-  <p-drawer header="Add Payment Mode" [(visible)]="visible2" position="right" [dismissible]="false">
+  <p-drawer header="Add Payment Mode" [(visible)]="showAddPaymentModeDrawer" position="right" [dismissible]="false">
     <div class="modal-body">
       <small class="text-warning mb-4">
         Before adding a new payment mode, consult with the front-end development team to verify:
@@ -186,6 +208,137 @@
 
         <div class="form-group mt-2">
           <button type="submit" class="btn btn-primary w-100" [disabled]="isFormValidToSubmitted || !myForm.valid">
+            <span *ngIf="!isFormValidToSubmitted">Submit</span>
+            <span *ngIf="isFormValidToSubmitted">
+              <i class="pi pi-spin pi-spinner me-2"></i>
+              Submitting...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </p-drawer>
+</ng-template>
+
+
+<ng-template #showWhoCreated>
+  <p-dialog 
+    header="Created By" 
+    [modal]="true" 
+    [(visible)]="visibleCreater" 
+    [style]="{ width: '350px', 'border-radius': '12px', 'overflow': 'hidden' }"
+    [contentStyle]="{ 'padding': '0' }"
+  >
+    <div class="created-by-card">
+      <div class="created-by-header">
+        <div class="avatar-container">
+          <img 
+            *ngIf="adminDetails.image_url; else defaultAvatar" 
+            [src]="adminDetails.image_url" 
+            alt="Avatar" 
+            class="avatar-img"
+          />
+          <ng-template #defaultAvatar>
+            <div class="avatar-placeholder">
+              <i class="fas fa-user"></i>
+            </div>
+          </ng-template>
+        </div>
+        <div>
+          <div class="created-by-name">
+            {{ adminDetails.first_name }} {{ adminDetails.last_name }}
+          </div>
+          <div class="created-by-role">
+            <i class="fas fa-user-shield me-1"></i>  {{ adminDetails.role }}
+          </div>
+        </div>
+      </div>
+      <div class="created-by-info">
+        <div class="info-row">
+          <i class="fas fa-envelope info-icon"></i>
+          <span>{{ adminDetails.email }}</span>
+        </div>
+        <div class="info-row" *ngIf="adminDetails.phone_number">
+          <i class="fas fa-phone info-icon"></i>
+          <span>{{ adminDetails.phone_number }}</span>
+        </div>
+        <div class="info-row" *ngIf="adminDetails.created_at">
+          <i class="fas fa-calendar-plus info-icon"></i>
+          <span>Created: {{ adminDetails.created_at | date: 'mediumDate' }}</span>
+        </div>
+      </div>
+    </div>
+  </p-dialog>
+</ng-template>
+
+
+
+
+<ng-template #editPaymentModeModal>
+  <p-drawer header="Edit Payment Mode" [(visible)]="showEditPaymentModeDrawer" position="right" [dismissible]="false">
+    <div class="modal-body">
+      <small class="text-warning mb-4">
+        Before adding a new payment mode, consult with the front-end development team to verify:
+        <ul>
+          <li>Redirect URL format (e.g., must start with '/')</li>
+          <li>Supported platforms (e.g., Android, iOS)</li>
+          <li>Image requirements (e.g., 50x50px, PNG/JPG, max 1MB)</li>
+        </ul>
+        This ensures seamless integration with the front-end application.
+      </small>
+
+      <form autocomplete="off" [formGroup]="myFormEdit" (ngSubmit)="onFormSubmitEdit()">
+        <!-- Payment Mode -->
+        <div class="col-12 mb-3">
+          <label for="paymode" class="form-label">Payment Mode Name <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="paymode" placeholder="Cash" formControlName="paymode"
+            [ngClass]="{'is-invalid': isInvalid('paymode')}" />
+          <div *ngIf="isInvalid('paymode') && myFormEdit.get('paymode')?.hasError('required')" class="text-danger">
+            Payment Mode Name is required.
+          </div>
+        </div>
+
+        <!-- Require Redirect -->
+        <div class="col-12 mb-3">
+          <div class="space-x-2">
+            <p-checkbox formControlName="require_redirect" [binary]="true" size="small"></p-checkbox>
+            <span class="ms-2">Require a redirect</span>
+          </div>
+        </div>
+
+        <!-- Redirect URL -->
+        <div class="col-12 mb-3" *ngIf="myFormEdit.get('require_redirect')?.value">
+          <label for="redirect_url" class="form-label">Redirect URL <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="redirect_url" placeholder="/cash" formControlName="redirect_url"
+            [ngClass]="{'is-invalid': isInvalid('redirect_url')}" />
+          <div *ngIf="isInvalid('redirect_url')">
+            <div *ngIf="myFormEdit.get('redirect_url')?.hasError('required')" class="text-danger">
+              Redirect URL is required when Require Redirect is checked.
+            </div>
+            <div *ngIf="myFormEdit.get('redirect_url')?.hasError('slashPrefix')" class="text-danger">
+              Redirect URL must start with a forward slash (/).
+            </div>
+          </div>
+        </div>
+
+        <!-- Supported Platforms -->
+        <div class="col-12 mb-3">
+          <label for="supported_platforms" class="form-label">Supported Platforms <span
+              class="text-danger">*</span></label>
+          <p-listbox [options]="usedPlartforms" formControlName="supported_platforms" [multiple]="true"
+            optionLabel="name" class="w-100" [listStyle]="{'max-height': '200px'}" />
+          <div *ngIf="isInvalid('supported_platforms') && myFormEdit.get('supported_platforms')?.hasError('required')"
+            class="text-danger">
+            At least one platform is required.
+          </div>
+        </div>
+
+    
+
+        <hr class="my-4" />
+
+        <div class="form-group mt-2">
+          <button type="submit" class="btn btn-primary w-100" [disabled]="isFormValidToSubmitted || !myFormEdit.valid">
             <span *ngIf="!isFormValidToSubmitted">Submit</span>
             <span *ngIf="isFormValidToSubmitted">
               <i class="pi pi-spin pi-spinner me-2"></i>

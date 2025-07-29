@@ -63,6 +63,54 @@ export class PaymentOptionsService implements OnDestroy {
       );
   }
 
+
+  editPaymentOption(formData: FormData): Observable<any> {
+    const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+    });
+
+    return this._httpClient
+      .post(`${environment.apiUrl}/update-payment-method`, formData, {
+        headers
+      })
+      .pipe(
+        tap((response: any) => {
+          // After successful addition, refresh the payment options
+          this.refreshPaymentOptions();
+        }),
+        catchError((error: any) => {
+          return throwError(error);
+        })
+      );
+  }
+
+
+  changePaymentOptionState(selctedItemId: number): Observable<any> {
+    const headers = new HttpHeaders({
+      //   'Content-Type': 'application/json',
+      //   Accept: 'application/json'
+    });
+
+    var data =  {
+      "pay_mode_id": selctedItemId
+    }
+
+    return this._httpClient
+      .post(`${environment.apiUrl}/payment-method-state-update`, data, {
+        headers
+      })
+      .pipe(
+        tap((response: any) => {
+          // After successful addition, refresh the payment options
+          this.refreshPaymentOptions();
+        }),
+        catchError((error: any) => {
+          return throwError(error);
+        })
+      );
+  }
+
   // Method to refresh payment options data
   refreshPaymentOptions(): void {
     this.getPaymentOptions().subscribe({

@@ -17,6 +17,10 @@ import { ListPipesModule } from 'src/app/core/pipes/list-pipes.module';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { AdminPaymentOptionsModel, PlartfomsUsed } from './payment-options-data';
 import { PaymentOptionsService } from './payment-options.service';
+import { DialogModule } from 'primeng/dialog';
+import { AdminsModel } from '../admins/admins_data';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 
 @Component({
   selector: 'app-payment-options',
@@ -35,14 +39,19 @@ import { PaymentOptionsService } from './payment-options.service';
     MatProgressBarModule,
     CheckboxModule,
     ListboxModule,
-    FileUpload
+    FileUpload,
+    DialogModule,
+    ConfirmPopupModule
   ],
   templateUrl: './payment-options.component.html',
-  styleUrl: './payment-options.component.scss'
+  styleUrl: './payment-options.component.scss',
+  providers: [ConfirmationService]
 })
 export class PaymentOptionsComponent implements OnDestroy {
-  visible2: boolean = false;
+  showAddPaymentModeDrawer: boolean = false;
   formSubmitted: boolean = false;
+  visibleCreater: boolean = false;
+  showEditPaymentModeDrawer: boolean = false;
 
   clubCreateTeamSubscription!: Subscription;
   error: string | null = null;
@@ -53,6 +62,7 @@ export class PaymentOptionsComponent implements OnDestroy {
 
   private formBuilder = inject(FormBuilder);
   private paymentOptionsService = inject(PaymentOptionsService);
+  private confirmationService = inject(ConfirmationService);
 
   isUploading: boolean = false;
   imageUrl: string = '';
@@ -60,18 +70,27 @@ export class PaymentOptionsComponent implements OnDestroy {
   selectedFile: any;
   uploadProgress = 0;
   myForm!: FormGroup;
+
+  myFormEdit!: FormGroup;
+
   isFormSubmitted: boolean = false;
   isFormValidToSubmitted: boolean = false;
 
   usedPlartforms!: PlartfomsUsed[];
 
+  usedPlartformsEdit!: PlartfomsUsed[];
+
   selectedCity!: PlartfomsUsed;
 
-  selectedFileName: string | null = 'No file chosen'; // Track selected file name
+  selectedFileName: string | null = 'No file chosen';
+
+  adminDetails!: AdminsModel;
+
+  selectedItemToEdit!: AdminPaymentOptionsModel;
 
   constructor(private _router: ActivatedRoute) {
     this.usedPlartforms = [
-      { name: 'Android', code: 'android' },
+      { name: 'ANDROID', code: 'android' },
       { name: 'IOS', code: 'ios' }
     ];
     this.myForm = this.formBuilder.group({
@@ -151,40 +170,94 @@ export class PaymentOptionsComponent implements OnDestroy {
     this.paymentOptionsService.refreshPaymentOptions();
   }
 
-  editVehicleType(id: number): void {
-    // Navigate to the edit page for the vehicle type
-    // this._router.router.navigate(['/admin', 'vehicle-type', id, 'edit']);
-    console.log(`Edit vehicle type with ID: ${id}`);
+  editPaymentMode(selectedItem: AdminPaymentOptionsModel, event: Event): void {
+    this.selectedItemToEdit = selectedItem;
+
+    this.usedPlartformsEdit = selectedItem.supported_platforms!.map((platformCode: string) => {
+      const platform = this.usedPlartforms.find((p) => p.code === platformCode);
+      return {
+        name: platform?.name || platformCode.toUpperCase(),
+        code: platform?.code || platformCode
+      };
+    });
+
+
+    this.myFormEdit = this.formBuilder.group({
+      paymode: [selectedItem.pay_method, [Validators.required]],
+      redirect_url: [selectedItem.redirect_url, [this.slashPrefixValidator()]],
+      require_redirect: [selectedItem.require_redirect],
+      supported_platforms: [this.usedPlartformsEdit, [Validators.required]]
+    });
+
+    this.myFormEdit.get('require_redirect')?.valueChanges.subscribe((value) => {
+      const redirectUrlControl = this.myFormEdit.get('redirect_url');
+      if (value) {
+        redirectUrlControl?.setValidators([Validators.required]);
+      } else {
+        redirectUrlControl?.clearValidators();
+      }
+      redirectUrlControl?.updateValueAndValidity();
+    });
+
+    // Automatically prepend slash if missing
+    this.myFormEdit.get('redirect_url')?.valueChanges.subscribe((value) => {
+      if (value && !value.startsWith('/')) {
+        this.myFormEdit.get('redirect_url')?.setValue(`/${value}`, { emitEvent: false });
+      }
+    });
+    this.confirmationService.confirm({
+      target: event.currentTarget as EventTarget,
+      message: `Do you want to  edit this record?`,
+      icon: 'pi pi-info-circle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true
+      },
+      acceptButtonProps: {
+        label: 'Edit',
+        severity: 'success'
+      },
+      accept: () => {
+        this.showEditPaymentModeDrawer = true;
+      },
+      reject: () => {}
+    });
   }
 
-  deleteVehicleType(id: number): void {
-    // Implement the logic to delete the vehicle type
-    // This could involve calling a service method to delete the item from the backend
-    console.log(`Delete vehicle type with ID: ${id}`);
-    // After deletion, you might want to refresh the list or navigate away
+  changeItemStateConfirm(selectedItem: AdminPaymentOptionsModel, event: Event): void {
+    this.confirmationService.confirm({
+      target: event.currentTarget as EventTarget,
+      message: `Do you want to ${selectedItem.is_active ? 'delete' : 'activate'} this record?`,
+      icon: 'pi pi-info-circle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true
+      },
+      acceptButtonProps: {
+        label: selectedItem.is_active ? 'Delete' : 'Activate',
+        severity: selectedItem.is_active ? 'danger' : 'success'
+      },
+      accept: () => {
+        this.changeItemState(selectedItem.id!);
+      },
+      reject: () => {}
+    });
   }
 
   addPaymentMode(): void {
-    // Implement the logic to add a new payment mode
-    console.log('Add new payment mode');
-    this.visible2 = true;
-    // This could involve opening a dialog or navigating to a form page
+    this.showAddPaymentModeDrawer = true;
   }
 
   onFormSubmit(): void {
-    // Implement the logic to handle form submission
-    console.log('Form submitted');
-    // This could involve calling a service to save the data
-
     this.isFormSubmitted = true;
     this.myForm.markAllAsTouched();
     if (this.myForm.valid) {
-      console.log('Form Value:', this.myForm.value);
       const formData = new FormData();
       formData.append('paymode', this.myForm.get('paymode')?.value);
       formData.append('redirect_url', this.myForm.get('redirect_url')?.value);
       formData.append('require_redirect', this.myForm.get('require_redirect')?.value);
-    //   formData.append('supported_platforms', JSON.stringify(this.myForm.get('supported_platforms')?.value));
 
       const platforms = this.myForm.get('supported_platforms')?.value || [];
       const platformCodes = platforms.map((p: any) => p.code);
@@ -192,18 +265,11 @@ export class PaymentOptionsComponent implements OnDestroy {
 
       formData.append('file', this.myForm.get('uploadedFile')?.value);
 
-      // console.log('FormData for server:', formData);
-
-      // for (const pair of (formData as any).entries()) {
-      //   console.log(pair[0], pair[1]);
-      // }
-
       this.isFormValidToSubmitted = true;
 
       this.paymentOptionsService.addPaymentOption(formData).subscribe({
         next: (res: any) => {
-          console.log('Payment option added successfully:', res);
-          this.visible2 = false; // Close drawer
+          this.showAddPaymentModeDrawer = false; // Close drawer
           this.myForm.reset({ require_redirect: false, supported_platforms: [] });
           this.selectedFileName = 'No file chosen';
           this.isFormValidToSubmitted = false;
@@ -221,6 +287,64 @@ export class PaymentOptionsComponent implements OnDestroy {
         }
       });
     }
+  }
+
+
+
+
+  onFormSubmitEdit(): void {
+    this.isFormSubmitted = true;
+    this.myFormEdit.markAllAsTouched();
+    if (this.myFormEdit.valid) {
+      const formData = new FormData();
+      formData.append('paymode', this.myFormEdit.get('paymode')?.value);
+      formData.append('redirect_url', this.myFormEdit.get('redirect_url')?.value);
+      formData.append('require_redirect', this.myFormEdit.get('require_redirect')?.value);
+
+      formData.append('pay_mode_id', this.selectedItemToEdit.id!.toString());
+
+
+      const platforms = this.myFormEdit.get('supported_platforms')?.value || [];
+      const platformCodes = platforms.map((p: any) => p.code);
+      formData.append('supported_platforms', JSON.stringify(platformCodes));
+
+
+      this.isFormValidToSubmitted = true;
+
+      this.paymentOptionsService.editPaymentOption(formData).subscribe({
+        next: (res: any) => {
+          this.showAddPaymentModeDrawer = false; // Close drawer
+          this.myForm.reset({ require_redirect: false, supported_platforms: [] });
+          this.isFormValidToSubmitted = false;
+          this.isFormSubmitted = false;
+          this.successMessage = 'Payment option updated successfully!';
+          // Clear success message after 3 seconds
+          setTimeout(() => {
+            this.successMessage = null;
+          }, 3000);
+        },
+        error: (error: any) => {
+          console.error('Error updating payment option:', error);
+          this.isFormSubmitted = false;
+          this.isFormValidToSubmitted = false;
+        }
+      });
+    }
+  }
+
+  changeItemState(selctedItemId: number): void {
+    this.paymentOptionsService.changePaymentOptionState(selctedItemId).subscribe({
+      next: (res: any) => {
+        this.successMessage = 'Payment option state changed successfully!';
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          this.successMessage = null;
+        }, 3000);
+      },
+      error: (error: any) => {
+        console.error('Error changing payment option state:', error);
+      }
+    });
   }
 
   isInvalid(controlName: string) {
@@ -244,4 +368,11 @@ export class PaymentOptionsComponent implements OnDestroy {
       return null;
     };
   }
+
+  showWhoCreatedMode(selctedItem: AdminPaymentOptionsModel): void {
+    this.visibleCreater = true;
+    this.adminDetails = selctedItem.admin!;
+  }
 }
+
+// am having an issue with supported_platforms, the user has a list of strings, which should appear as selcted on the UI, also we need to see all the items
