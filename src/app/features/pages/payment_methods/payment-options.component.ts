@@ -1,4 +1,4 @@
-import { CommonModule, NgIf, NgOptimizedImage } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Component, inject, OnDestroy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,14 +8,14 @@ import { ActivatedRoute } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 
-import { SharedModule } from 'src/app/shared/shared.module';
-import { ListPipesModule } from 'src/app/core/pipes/list-pipes.module';
-import { AdminPaymentOptionsModel, PlartfomsUsed, UploadEvent } from './payment-options-data';
-import { DrawerModule } from 'primeng/drawer';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CheckboxModule } from 'primeng/checkbox';
-import { ListboxModule } from 'primeng/listbox';
+import { DrawerModule } from 'primeng/drawer';
 import { FileUpload, FileUploadHandlerEvent } from 'primeng/fileupload';
+import { ListboxModule } from 'primeng/listbox';
+import { ListPipesModule } from 'src/app/core/pipes/list-pipes.module';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { AdminPaymentOptionsModel, PlartfomsUsed } from './payment-options-data';
 import { PaymentOptionsService } from './payment-options.service';
 
 @Component({
@@ -48,6 +48,8 @@ export class PaymentOptionsComponent implements OnDestroy {
   error: string | null = null;
   paymentOptions: AdminPaymentOptionsModel[] = [];
   accountDetails: any;
+  isLoading: boolean = false;
+  successMessage: string | null = null;
 
   private formBuilder = inject(FormBuilder);
   private paymentOptionsService = inject(PaymentOptionsService);
@@ -87,6 +89,7 @@ export class PaymentOptionsComponent implements OnDestroy {
 
   ngOnInit(): void {
     this.getvehicleTypeResolver();
+    this.subscribeToServiceUpdates();
 
     this.myForm.get('require_redirect')?.valueChanges.subscribe((value) => {
       const redirectUrlControl = this.myForm.get('redirect_url');
@@ -99,7 +102,7 @@ export class PaymentOptionsComponent implements OnDestroy {
     });
 
     // Automatically prepend slash if missing
-    this.myForm.get('redirect_url')?.valueChanges.subscribe(value => {
+    this.myForm.get('redirect_url')?.valueChanges.subscribe((value) => {
       if (value && !value.startsWith('/')) {
         this.myForm.get('redirect_url')?.setValue(`/${value}`, { emitEvent: false });
       }
@@ -113,13 +116,39 @@ export class PaymentOptionsComponent implements OnDestroy {
   }
 
   getvehicleTypeResolver(): void {
+    this.isLoading = true;
     this.clubCreateTeamSubscription = this._router.data.subscribe((data: any) => {
       if (data.paymentOptions) {
         this.paymentOptions = data.paymentOptions;
+        this.isLoading = false;
       } else {
         this.error = 'Failed to load data';
+        this.isLoading = false;
       }
     });
+  }
+
+  // Subscribe to service updates for real-time data
+  subscribeToServiceUpdates(): void {
+    this.clubCreateTeamSubscription = this.paymentOptionsService.plans$.subscribe({
+      next: (data) => {
+        this.paymentOptions = data;
+        this.error = null;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.error = 'Failed to load payment options';
+        this.isLoading = false;
+        console.error('Error loading payment options:', error);
+      }
+    });
+  }
+
+  // Manual refresh method (can be called from UI if needed)
+  refreshPaymentOptions(): void {
+    this.isLoading = true;
+    this.error = null;
+    this.paymentOptionsService.refreshPaymentOptions();
   }
 
   editVehicleType(id: number): void {
@@ -149,7 +178,7 @@ export class PaymentOptionsComponent implements OnDestroy {
 
     this.isFormSubmitted = true;
     this.myForm.markAllAsTouched();
-   if (this.myForm.valid) {
+    if (this.myForm.valid) {
       console.log('Form Value:', this.myForm.value);
       const formData = new FormData();
       formData.append('paymode', this.myForm.get('paymode')?.value);
@@ -157,41 +186,41 @@ export class PaymentOptionsComponent implements OnDestroy {
       formData.append('require_redirect', this.myForm.get('require_redirect')?.value);
     //   formData.append('supported_platforms', JSON.stringify(this.myForm.get('supported_platforms')?.value));
 
-const platforms = this.myForm.get('supported_platforms')?.value || [];
-const platformCodes = platforms.map((p: any) => p.code);
-formData.append('supported_platforms', JSON.stringify(platformCodes));
+      const platforms = this.myForm.get('supported_platforms')?.value || [];
+      const platformCodes = platforms.map((p: any) => p.code);
+      formData.append('supported_platforms', JSON.stringify(platformCodes));
 
       formData.append('file', this.myForm.get('uploadedFile')?.value);
 
-      console.log('FormData for server:', formData);
+      // console.log('FormData for server:', formData);
 
+      // for (const pair of (formData as any).entries()) {
+      //   console.log(pair[0], pair[1]);
+      // }
 
-      for (const pair of (formData as any).entries()) {
-  console.log(pair[0], pair[1]);
-}
+      this.isFormValidToSubmitted = true;
 
-
-       this.paymentOptionsService
-          .addPaymentOption(formData)
-          .then((res: any) => {
-            // console.log(res);
-
-            // this.imageUrl = '';
-            // this.myForm.reset();
-
-                 
-      // TODO: Send formData to server
-      this.visible2 = false; // Close drawer
-      this.myForm.reset({ require_redirect: false, supported_platforms: [] });
-      this.selectedFileName = 'No file chosen';
-          })
-          .catch((error:any) => {
-            this.isFormSubmitted = false;
-            this.isFormValidToSubmitted = false;
-          });
-
- 
-   }
+      this.paymentOptionsService.addPaymentOption(formData).subscribe({
+        next: (res: any) => {
+          console.log('Payment option added successfully:', res);
+          this.visible2 = false; // Close drawer
+          this.myForm.reset({ require_redirect: false, supported_platforms: [] });
+          this.selectedFileName = 'No file chosen';
+          this.isFormValidToSubmitted = false;
+          this.isFormSubmitted = false;
+          this.successMessage = 'Payment option added successfully!';
+          // Clear success message after 3 seconds
+          setTimeout(() => {
+            this.successMessage = null;
+          }, 3000);
+        },
+        error: (error: any) => {
+          console.error('Error adding payment option:', error);
+          this.isFormSubmitted = false;
+          this.isFormValidToSubmitted = false;
+        }
+      });
+    }
   }
 
   isInvalid(controlName: string) {
