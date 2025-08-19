@@ -7,13 +7,11 @@ import packageInfo from '../../package.json';
 export const environment = {
   appVersion: packageInfo.version,
   production: false,
-  baseApiUrl: 'https://6f48b5f3ee5d.ngrok-free.app/api/v1',
-          // baseApiUrl: 'https://api.arrively.s7works.io/api/v1',
+  baseApiUrl: 'https://0e94c824f594.ngrok-free.app/api/v1',
+  apiUrl: 'https://0e94c824f594.ngrok-free.app/api/v1/admin'
 
-
-  apiUrl: 'https://6f48b5f3ee5d.ngrok-free.app/api/v1/admin'
-          // apiUrl: 'https://api.arrively.s7works.io/api/v1/admin',
-
+  // baseApiUrl: 'https://api.arrively.s7works.io/api/v1',
+  // apiUrl: 'https://api.arrively.s7works.io/api/v1/admin',
 };
 
 /*

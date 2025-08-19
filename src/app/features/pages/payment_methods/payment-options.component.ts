@@ -270,7 +270,7 @@ export class PaymentOptionsComponent implements OnDestroy {
       this.paymentOptionsService.addPaymentOption(formData).subscribe({
         next: (res: any) => {
           this.showAddPaymentModeDrawer = false; // Close drawer
-          this.myForm.reset({ require_redirect: false, supported_platforms: [] });
+          this.myForm.reset({ require_redirect: false, supported_platforms: this.usedPlartforms });
           this.selectedFileName = 'No file chosen';
           this.isFormValidToSubmitted = false;
           this.isFormSubmitted = false;
@@ -314,7 +314,7 @@ export class PaymentOptionsComponent implements OnDestroy {
       this.paymentOptionsService.editPaymentOption(formData).subscribe({
         next: (res: any) => {
           this.showAddPaymentModeDrawer = false; // Close drawer
-          this.myForm.reset({ require_redirect: false, supported_platforms: [] });
+          this.myForm.reset({ require_redirect: false, supported_platforms: this.usedPlartforms });
           this.isFormValidToSubmitted = false;
           this.isFormSubmitted = false;
           this.successMessage = 'Payment option updated successfully!';
