@@ -1,4 +1,3 @@
-import { PhoneNumber } from 'libphonenumber-js/custom';
 import { CommonModule, NgIf } from '@angular/common';
 import { Component, OnDestroy, ViewChild, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';

@@ -44,22 +44,17 @@ export interface Vehicle {
     hire_price_per_mile?:          number;
     vehicle_total_rides?:          number;
     style?:                        City;
-    documents?:                    Documents;
-    inspection?:                   Inspection;
+    inspection?:                   AutoInsuarance;
+    auto_insuarance?:              AutoInsuarance;
+    vehicle_registration?:         AutoInsuarance;
+    driver_license?:               AutoInsuarance;
+    commercial_license?:           AutoInsuarance;
     created_at?:                   Date;
     updated_at?:                   Date;
 }
 
-export interface Documents {
-    id?:                   number;
-    auto_insuarance?:      string;
-    vehicle_registration?: string;
-    driver_license?:       string;
-    commercial_license?:   string;
-}
-
-export interface Inspection {
-    id?:                 number;
-    vehicle_inspection?: string;
-    is_active?:          boolean;
+export interface AutoInsuarance {
+    id?:        number;
+    document?:  string;
+    is_active?: boolean;
 }

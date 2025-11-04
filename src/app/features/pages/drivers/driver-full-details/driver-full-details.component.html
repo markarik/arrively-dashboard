@@ -26,7 +26,7 @@
 
           <li class="list-group-item">
             <a
-              href="{{ driverDetails!.vehicle!.documents!.driver_license }}"
+              href="{{ driverDetails!.vehicle!.driver_license?.document}}"
               target="_blank"
               class="text-primary text-decoration-underline"
             >
@@ -165,7 +165,7 @@
               <ul class="list-group list-group-flush">
                 <li class="list-group-item">
                   <a
-                    href="{{ driverDetails!.vehicle!.documents!.auto_insuarance }}"
+                    href="{{ driverDetails!.vehicle!.auto_insuarance?.document}}"
                     target="_blank"
                     class="text-primary text-decoration-underline"
                   >
@@ -174,7 +174,7 @@
                 </li>
                 <li class="list-group-item">
                   <a
-                    href="{{ driverDetails!.vehicle!.documents!.vehicle_registration }}"
+                    href="{{ driverDetails!.vehicle!.vehicle_registration?.document }}"
                     target="_blank"
                     class="text-primary text-decoration-underline"
                   >
@@ -183,7 +183,7 @@
                 </li>
                 <li class="list-group-item">
                   <a
-                    href="{{ driverDetails!.vehicle!.documents!.commercial_license }}"
+                    href="{{ driverDetails!.vehicle!.commercial_license?.document }}"
                     target="_blank"
                     class="text-primary text-decoration-underline"
                   >

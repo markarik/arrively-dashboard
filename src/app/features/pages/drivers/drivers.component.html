@@ -16,6 +16,8 @@
                 <tr>
                     <th scope="col" class="p-3">Name</th>
                     <th scope="col" class="p-3">Rate</th>
+                                        <th scope="col" class="p-3">Email</th>
+
                     <th scope="col" class="p-3">Where From</th>
                     <th scope="col" class="p-3">Created At</th>
                 </tr>
@@ -37,6 +39,8 @@
                             {{ item.rate }}
                         </span>
                     </td>
+                                        <td class="p-3">{{ item.email }}</td>
+
                     <td class="p-3">{{ item.where_from }}</td>
                     <td class="p-3">{{ item.created_at | dateConvert : "yyyy-MMM-dd"}}</td>
                    
