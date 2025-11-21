@@ -93,11 +93,7 @@ const routes: Routes = [
             data: { breadcrumb: 'Create Admin' }
           },
 
-          
-
-
-
-             {
+          {
             path: 'vehicle-types',
 
             loadChildren: () => import('./features/pages/vehicle_types/vehicle-types-routing.module'),
@@ -105,16 +101,24 @@ const routes: Routes = [
             data: { breadcrumb: 'Vehicle Types' }
           },
 
-            {
+          {
             path: 'payment-modes',
 
             loadChildren: () => import('./features/pages/payment_methods/payment-options-routing.module'),
 
             data: { breadcrumb: 'Payment Options' }
           },
+
+          {
+            path: 'faq',
+
+            loadChildren: () => import('./features/pages/faqs/faqs-routing.module'),
+
+            data: { breadcrumb: 'FAQ' }
+          }
         ]
       }
-    ]
+    ],
   },
   {
     path: '',

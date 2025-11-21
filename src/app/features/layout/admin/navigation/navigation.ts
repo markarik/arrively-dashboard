@@ -103,20 +103,23 @@ export const NavigationItems: NavigationItem[] = [
         url: '/admin/vehicle-types'
       },
 
-         {
+      {
         id: 'button',
         title: 'Payment Modes',
         icon: 'fas fa-cash-register',
-        
 
         type: 'item',
         url: '/admin/payment-modes'
       },
 
+      {
+        id: 'button',
+        title: 'FAQ',
+        icon: 'fas fa-question-circle',
 
-
-      
-      
+        type: 'item',
+        url: '/admin/faq'
+      }
     ]
   }
 ];

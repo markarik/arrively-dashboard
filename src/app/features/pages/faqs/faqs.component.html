@@ -1,0 +1,102 @@
+<div class="container-fluid">
+  <p-confirmDialog></p-confirmDialog>
+  <div class="border p-4">
+    <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-3">
+      <h4 class="m-0">Frequently Asked Questions</h4>
+      <a class="btn btn-primary" routerLink="create">Create FAQ</a>
+    </div>
+
+    <ng-container [ngTemplateOutlet]="vehicleTypesListOutlet"></ng-container>
+  </div>
+</div>
+
+<ng-template #vehicleTypesListOutlet>
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered text-sm">
+      <thead class="table-light">
+        <tr>
+          <th scope="col" class="p-3">Question</th>
+          <th scope="col" class="p-3">Is Active</th>
+
+          <th scope="col" class="p-3">Created At</th>
+          <th scope="col" class="p-3">Updated At</th>
+
+          <th scope="col" class="p-3">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <ng-container [ngTemplateOutlet]="readData"></ng-container>
+        <tr *ngIf="!(faqs.data?.length)">
+          <td class="p-3" colspan="5">No Faqs Available</td>
+        </tr>
+        @for (item of (faqs.data ?? []); track $index) {
+          <tr>
+            <td class="p-3" >
+
+              <a href="javascript:void(0)" (click)="viewQuestion(item)">
+              {{ item.question }}
+              </a>
+            </td>
+            <td class="p-3">
+              <p-badge [value]="item.is_active ? 'Active' : 'Inactive'" [severity]="item.is_active ? 'success' : 'danger'"></p-badge>
+            </td>
+
+              <td class="p-3">{{ item.created_at | dateConvert: 'yyyy-MMM-dd' }}</td>
+              <td class="p-3">{{ item.updated_at | dateConvert: 'yyyy-MMM-dd' }}</td>
+            <td class="p-3 d-flex gap-2 align-items-center">
+              <button class="btn btn-link text-primary p-0" type="button" (click)="goToEdit(item)" title="Edit FAQ">
+                <i class="pi pi-pencil"></i>
+                <span class="visually-hidden">Edit</span>
+              </button>
+              <button
+                class="btn btn-link text-danger p-0"
+                type="button"
+                (click)="confirmDeleteFaq(item)"
+                [disabled]="deletingIds.has(item.id!)"
+                title="Delete FAQ"
+              >
+                <span class="spinner-border spinner-border-sm me-1" *ngIf="deletingIds.has(item.id!)"></span>
+                <i class="pi pi-trash" *ngIf="!deletingIds.has(item.id!)"></i>
+                <span class="visually-hidden">Delete</span>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+
+<ng-template #readData>
+
+
+
+
+
+ <p-drawer [(visible)]="visible" position="bottom" [style]="{ height: 'auto' }">
+    <ng-template #header>
+        <div class="flex items-start gap-2">
+            <h5 class="font-bold">{{ faqSelected?.question }}</h5>
+        </div>
+    </ng-template>
+    
+
+      <div [innerHTML]="safeHtmlContent"></div>
+
+    <ng-template #footer>
+        <div class="flex items-center gap-2">
+          <button pButton label="Delete" icon="pi pi-trash" class="w-full" severity="danger" text   (click)="confirmDeleteFaq(faqSelected!)"
+          [disabled]="deletingIds.has(faqSelected?.id!)"></button>
+
+            <button pButton label="Edit" icon="pi pi-pencil" class="w-full" outlined (click)="goToEdit(faqSelected!)"></button>
+        </div>
+    </ng-template>
+</p-drawer> 
+
+
+</ng-template>
+
+
+
