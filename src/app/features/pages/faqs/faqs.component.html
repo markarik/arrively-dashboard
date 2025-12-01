@@ -1,0 +1,120 @@
+<div class="container-fluid">
+  <p-confirmDialog></p-confirmDialog>
+  <div class="border p-4">
+    <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-3">
+      <h4 class="m-0">Frequently Asked Questions</h4>
+      <a class="btn btn-primary" routerLink="create">Create FAQ</a>
+    </div>
+
+    <ng-container [ngTemplateOutlet]="faqsListOutlet"></ng-container>
+  </div>
+</div>
+
+<ng-template #faqsListOutlet>
+  <ng-container [ngTemplateOutlet]="readData"></ng-container>
+  <p-table
+    [value]="faqs.data ?? []"
+    [paginator]="true"
+    [rows]="faqs.pagination?.page_size ?? 10"
+    [totalRecords]="faqs.pagination?.total_items ?? 0"
+    [first]="((faqs.pagination?.page ?? 1) - 1) * (faqs.pagination?.page_size ?? 10)"
+    [rowsPerPageOptions]="[5, 10, 20, 50]"
+    (onPage)="onPageChange($event)"
+    [loading]="false"
+    styleClass="p-datatable-striped"
+    [tableStyle]="{ 'min-width': '50rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Question</th>
+        <th>Is Active</th>
+        <th>Created At</th>
+        <th>Updated At</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+      <tr>
+        <td>
+          <a href="javascript:void(0)" (click)="viewQuestion(item)" class="text-primary text-decoration-none">
+            {{ item.question }}
+          </a>
+        </td>
+        <td>
+          <p-badge [value]="item.is_active ? 'Active' : 'Inactive'" [severity]="item.is_active ? 'success' : 'danger'"></p-badge>
+        </td>
+        <td>{{ item.created_at | dateConvert: 'yyyy-MMM-dd' }}</td>
+        <td>{{ item.updated_at | dateConvert: 'yyyy-MMM-dd' }}</td>
+        <td>
+          <div class="d-flex gap-2 align-items-center">
+            <button class="btn btn-link text-primary p-0" type="button" (click)="goToEdit(item)" title="Edit FAQ">
+              <i class="pi pi-pencil"></i>
+              <span class="visually-hidden">Edit</span>
+            </button>
+            <button
+              class="btn btn-link text-danger p-0"
+              type="button"
+              (click)="confirmDeleteFaq(item)"
+              [disabled]="deletingIds.has(item.id!)"
+              title="Delete FAQ"
+            >
+              <span class="spinner-border spinner-border-sm me-1" *ngIf="deletingIds.has(item.id!)"></span>
+              <i class="pi pi-trash" *ngIf="!deletingIds.has(item.id!)"></i>
+              <span class="visually-hidden">Delete</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center p-3">No FAQs Available</td>
+      </tr>
+    </ng-template>
+  </p-table>
+  
+  <div class="d-flex justify-content-center mt-3" *ngIf="hasMorePages">
+    <button
+      pButton
+      label="Load More"
+      icon="pi pi-chevron-down"
+      class="p-button-outlined"
+      (click)="loadMore()"
+      [disabled]="isLoadingMore"
+      [loading]="isLoadingMore"
+    ></button>
+  </div>
+</ng-template>
+
+
+<ng-template #readData>
+
+
+
+
+
+ <p-drawer [(visible)]="visible" position="bottom" [style]="{ height: 'auto' }">
+    <ng-template #header>
+        <div class="flex items-start gap-2">
+            <h5 class="font-bold">{{ faqSelected?.question }}</h5>
+        </div>
+    </ng-template>
+    
+
+      <div [innerHTML]="safeHtmlContent"></div>
+
+    <ng-template #footer>
+        <div class="flex items-center gap-2">
+          <button pButton label="Delete" icon="pi pi-trash" class="w-full" severity="danger" text   (click)="confirmDeleteFaq(faqSelected!)"
+          [disabled]="deletingIds.has(faqSelected?.id!)"></button>
+
+            <button pButton label="Edit" icon="pi pi-pencil" class="w-full" outlined (click)="goToEdit(faqSelected!)"></button>
+        </div>
+    </ng-template>
+</p-drawer> 
+
+
+</ng-template>
+
+
+

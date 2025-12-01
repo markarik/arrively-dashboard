@@ -1,18 +1,18 @@
 import { ResolveFn } from '@angular/router';
-import {  TeamService } from './drivers.service';
+import {  FaqsService } from './faqs.service';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { DriverAcountsModel } from './drivers_data';
+import { FAQModel } from './faq_data';
 
-export const teamResolver: ResolveFn<DriverAcountsModel[]> = (route, state) => {
-  const _teamService = inject(TeamService);
-
-
+export const faqResolver: ResolveFn<FAQModel> = (route, state) => {
+  const _faqsService = inject(FaqsService);
 
 
 
-  return _teamService
-    .getDrivers()
+
+
+  return _faqsService
+    .getFaqs(1, 10)
 
     .pipe(
       catchError((error) => {

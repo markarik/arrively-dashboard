@@ -16,7 +16,7 @@ const BASE_API_URL = environment.apiUrl;
 
 
 
-export class TeamService implements OnDestroy {
+export class DriversService implements OnDestroy {
   private plansSubject = new ReplaySubject<DriverAcountsModel[]>(1);
   plans$: Observable<DriverAcountsModel[]> = this.plansSubject.asObservable();
   private localSubscription: Subscription = new Subscription();

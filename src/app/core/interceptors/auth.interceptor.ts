@@ -10,8 +10,8 @@ let isRefreshing = false;
 let refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 // Retry configuration
-const MAX_RETRIES = 3;
-const RETRY_DELAYS = [1000, 2000, 3000]; // in milliseconds
+const MAX_RETRIES = 5;
+const RETRY_DELAYS = [1000, 2000, 3000,4000,5000]; // in milliseconds
 
 export const authInterceptor = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
   const authService = inject(AuthService);

@@ -1,6 +1,6 @@
 // Angular Import
-import { DOCUMENT } from '@angular/common';
-import { Component, OnDestroy, ViewEncapsulation, inject, input } from '@angular/core';
+
+import { Component, OnDestroy, ViewEncapsulation, inject, input, DOCUMENT } from '@angular/core';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 
 // project import

@@ -135,6 +135,8 @@ export class AuthService implements OnDestroy {
           r(res);
         })
         .catch((e) => {
+                    console.log("Error during sign in:", e);
+
           Notify.failure(e.error.message || 'An error occurred during sign in. Please try again.');
 
           rj(e);

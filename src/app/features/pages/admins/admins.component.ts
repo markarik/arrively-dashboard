@@ -31,7 +31,6 @@ import { AdminsModel } from './admins_data';
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
-        RouterLink,
         DrawerModule, ButtonModule,AvatarModule,
         SharedModule,
         ListPipesModule,

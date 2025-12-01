@@ -6,6 +6,7 @@
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "esModuleInterop": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
@@ -13,17 +14,15 @@
     "sourceMap": true,
     "declaration": false,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "skipLibCheck": true,
-    "target": "es2022", // this will auto target to latest by angular cli
+    "target": "es2022",
     "module": "es2020",
     "lib": [
-      "es2022", // this will auto target to latest by angular cli
+      "es2022",
       "dom"
     ]
   },

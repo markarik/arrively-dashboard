@@ -2,7 +2,10 @@
   <li [ngClass]="item.classes" [routerLinkActive]="['active']">
     <a class="nav-link" [target]="item.target ? '_blank' : '_self'" [routerLink]="[item.url]" (click)="closeOtherMenu($event)">
       @if (item.icon) {
-        <span class="pcoded-micon"><i class="feather" [ngClass]="item.icon"></i></span>
+        <span class="pcoded-micon">
+          <i class="" [ngClass]="item.icon"></i>
+          <!-- <i class="fas fa-car"></i> -->
+        </span>
       }
       @if (item.icon) {
         <span class="pcoded-mtext">{{ item.title }}</span>
