@@ -12,7 +12,7 @@ export const faqResolver: ResolveFn<FAQModel> = (route, state) => {
 
 
   return _faqsService
-    .getFaqs()
+    .getFaqs(1, 10)
 
     .pipe(
       catchError((error) => {

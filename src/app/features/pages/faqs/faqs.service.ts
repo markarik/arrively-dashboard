@@ -26,16 +26,28 @@ export class FaqsService implements OnDestroy {
       private http: HttpClient,
   ) {}
 
-  getFaqs(): Observable<FAQModel> {
+  getFaqs(page?: number, pageSize?: number, isActive?: boolean): Observable<FAQModel> {
       const headers = new HttpHeaders({
           'Content-Type': 'application/json',
           Accept: 'application/json',
        
       });
 
+      const params: any = {};
+      if (page !== undefined) {
+          params.page = page;
+      }
+      if (pageSize !== undefined) {
+          params.page_size = pageSize;
+      }
+      if (isActive !== undefined) {
+          params.is_active = isActive;
+      }
+
       return this.http
           .get<FAQModel>(`${BASE_API_URL}/get-all-faqs`, {
               headers,
+              params,
           })
           .pipe(
               tap((res: FAQModel) => {

@@ -22,6 +22,8 @@ import { FaqsService } from './faqs.service';
 import { DrawerModule } from 'primeng/drawer';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
+import { PaginatorModule } from 'primeng/paginator';
 
 @Component({
     selector: 'app-faqs',
@@ -41,6 +43,8 @@ import { ButtonModule } from 'primeng/button';
         DrawerModule,
         AvatarModule,
         ButtonModule,
+        TableModule,
+        PaginatorModule,
     ],
     templateUrl: './faqs.component.html',
     styleUrl: './faqs.component.scss',
@@ -53,6 +57,7 @@ export class FaqsComponent implements OnDestroy {
     visible: boolean = false;
     faqSelected: FAQDatum | null = null;
     safeHtmlContent: SafeHtml | null = null;
+    isLoadingMore = false;
 
     // private sessionStore = inject(SessionStore);
 
@@ -158,5 +163,62 @@ export class FaqsComponent implements OnDestroy {
                     this.error = 'Unable to delete FAQ. Please try again.';
                 },
             });
+    }
+
+    onPageChange(event: any): void {
+        const page = event.page + 1;
+        const pageSize = event.rows;
+        this.faqsService
+            .getFaqs(page, pageSize)
+            .pipe(take(1))
+            .subscribe({
+                next: (data) => {
+                    this.faqs = data;
+                },
+                error: () => {
+                    this.error = 'Unable to load FAQs. Please try again.';
+                },
+            });
+    }
+
+    loadMore(): void {
+        const currentPage = this.faqs.pagination?.page ?? 1;
+        const totalPages = this.faqs.pagination?.total_pages ?? 1;
+        const pageSize = this.faqs.pagination?.page_size ?? 10;
+
+        if (currentPage >= totalPages || this.isLoadingMore) {
+            return;
+        }
+
+        this.isLoadingMore = true;
+        const nextPage = currentPage + 1;
+
+        this.faqsService
+            .getFaqs(nextPage, pageSize)
+            .pipe(
+                take(1),
+                finalize(() => {
+                    this.isLoadingMore = false;
+                })
+            )
+            .subscribe({
+                next: (data) => {
+                    const existingData = this.faqs.data ?? [];
+                    const newData = data.data ?? [];
+                    this.faqs = {
+                        ...data,
+                        data: [...existingData, ...newData],
+                    };
+                },
+                error: () => {
+                    this.error = 'Unable to load more FAQs. Please try again.';
+                },
+            });
+    }
+
+    get hasMorePages(): boolean {
+        const currentPage = this.faqs.pagination?.page ?? 1;
+        const totalPages = this.faqs.pagination?.total_pages ?? 1;
+        return currentPage < totalPages;
     }
 }
